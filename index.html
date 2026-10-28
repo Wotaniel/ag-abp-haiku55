@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AdGuard: Блокировщик рекламы — превью</title>
+<style>
+  html, body { margin: 0; background: #000; color: #cfe8d5;
+    font: 13px/1.5 ui-monospace, Menlo, monospace; }
+  header { display: flex; align-items: center; gap: 14px; padding: 22px 24px 8px; max-width: 1060px; margin: 0 auto; box-sizing: border-box; }
+  header img { width: 44px; height: 44px; border-radius: 10px; display: block; }
+  header h1 { margin: 0; font-size: 17px; font-weight: 700; }
+  main { display: flex; flex-direction: column; align-items: center; padding: 8px 20px 56px; box-sizing: border-box; }
+  .player { width: 100%; max-width: 1060px; }
+  #stage { background: #000; display: flex; justify-content: center; }
+  #stage video { display: block; width: 100%; height: auto; max-height: 72vh; object-fit: contain; border-radius: 12px; }
+  #bar { display: flex; gap: 14px; align-items: center; margin-top: 10px; padding: 12px 16px;
+         background: #101315; border-radius: 12px; }
+  button, .btn { background: #1d2b24; color: #cfe8d5; border: 1px solid #2e4438; border-radius: 8px;
+           padding: 8px 16px; font: 600 13px ui-monospace, Menlo, monospace; cursor: pointer; text-decoration: none; white-space: nowrap; }
+  button:hover, .btn:hover { background: #27402f; }
+  #time { min-width: 150px; text-align: right; }
+  input[type=range] { flex: 1; accent-color: #67c28e; }
+  .shots { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin-top: 56px; }
+  .shots img { height: 420px; width: auto; border-radius: 26px; border: 1px solid #1d2b24; display: block; }
+  .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 40px; }
+  .btn.primary { background: #67c28e; color: #000; border-color: #67c28e; }
+  .btn.primary:hover { background: #7fd3a2; }
+  @media (max-width: 640px) {
+    #time { min-width: 0; font-size: 11px; }
+    .shots img { height: auto; width: calc(50% - 18px); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <img src="assets/icon.png" alt="AdGuard">
+  <h1>AdGuard: Блокировщик рекламы</h1>
+</header>
+
+<main>
+  <section class="player">
+    <div id="stage">
+      <video id="vid" src="assets/loop.mp4" autoplay muted loop playsinline preload="auto"></video>
+    </div>
+    <div id="bar">
+      <button id="play" type="button">⏸ Pause</button>
+      <input id="scrub" type="range" min="0" max="0" step="0.01" value="0" aria-label="Позиция в ролике">
+      <span id="time">0.00 / 0.00 s</span>
+    </div>
+  </section>
+
+  <section class="shots">
+    <img src="assets/shot1.png" alt="Скриншот 1 из App Store" loading="lazy">
+    <img src="assets/shot2.png" alt="Скриншот 2 из App Store" loading="lazy">
+    <img src="assets/shot3.png" alt="Скриншот 3 из App Store" loading="lazy">
+    <img src="assets/shot4.png" alt="Скриншот 4 из App Store" loading="lazy">
+  </section>
+
+  <nav class="cta">
+    <a class="btn primary" href="https://apps.apple.com/ru/app/id1047223162" target="_blank" rel="noopener">App Store</a>
+    <a class="btn" href="https://adguard.com" target="_blank" rel="noopener">adguard.com</a>
+  </nav>
+</main>
+
+<script>
+  const v = document.getElementById('vid');
+  const playBtn = document.getElementById('play');
+  const scrub = document.getElementById('scrub');
+  const timeEl = document.getElementById('time');
+
+  function update() {
+    playBtn.textContent = v.paused ? '▶ Play' : '⏸ Pause';
+    if (!isNaN(v.duration)) scrub.max = v.duration;
+    scrub.value = v.currentTime;
+    timeEl.textContent = v.currentTime.toFixed(2) + ' / ' + (v.duration || 0).toFixed(2) + ' s';
+  }
+
+  playBtn.onclick = () => (v.paused ? v.play() : v.pause());
+  scrub.oninput = () => { v.pause(); v.currentTime = parseFloat(scrub.value); };
+  v.addEventListener('loadedmetadata', update);
+  v.addEventListener('timeupdate', update);
+  v.addEventListener('play', update);
+  v.addEventListener('pause', update);
+
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); playBtn.click(); }
+  });
+</script>
+</body>
+</html>
